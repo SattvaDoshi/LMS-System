@@ -1,18 +1,28 @@
 import path from "path";
-
 import multer from "multer";
+import fs from "fs";
+
+// Define the upload directory
+const uploadDir = "/uploads";
+
+// Ensure the directory exists
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 const upload = multer({
-  dest: "uploads/",
-  limits: { fileSize: 500 * 1024 * 1024 }, // 500 mb in size max limit
+  dest: uploadDir,
+  limits: { fileSize: 500 * 1024 * 1024 }, // 500 MB max file size limit
   storage: multer.diskStorage({
-    destination: "uploads/",
+    destination: (req, file, cb) => {
+      cb(null, uploadDir);
+    },
     filename: (_req, file, cb) => {
       cb(null, file.originalname);
     },
   }),
   fileFilter: (_req, file, cb) => {
-    let ext = path.extname(file.originalname);
+    let ext = path.extname(file.originalname).toLowerCase();
     if (
       ext !== ".jpg" &&
       ext !== ".jpeg" &&
