@@ -1,11 +1,7 @@
 import userModel from "../models/user.model.js";
-import jwt from "jsonwebtoken";
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
-import fs from 'fs';
-import cloudinary from 'cloudinary';
 import AppError from "../utils/error.utils.js";
-import sendEmail from "../utils/sendEmail.js";
 
 const cookieOptions = {
     httpOnly: true,
@@ -90,21 +86,22 @@ const login = async (req, res, next) => {
 
 
 const logout = async (req, res, next) => {
-    try {
-        res.cookie('token', null, {
+        try {
+          res.clearCookie('token', {
             secure: true,
-            maxAge: 0,
             httpOnly: true
-        })
-
-        res.status(200).json({
+          });
+      
+          res.status(200).json({
             success: true,
-            message: 'User loggedout successfully'
-        })
-    }
-    catch (e) {
-        return next(new AppError(e.message, 500))
-    }
+            message: 'User logged out successfully'
+          });
+        } catch (error) {
+          res.status(500).json({
+            success: false,
+            message: 'Error while logging out'
+          });
+        }
 }
 
 
@@ -121,42 +118,6 @@ const getProfile = async (req, res) => {
     } catch (e) {
         return next(new AppError('Failed to fetch user profile', 500))
     }
-}
-
-const forgotPassword = async (req, res, next) => {
-    const { email } = req.body;
-    if (!email) {
-        return next(new AppError('Email is required', 400))
-    }
-
-    const user = await userModel.findOne({ email });
-    if (!user) {
-        return next(new AppError('Email not registered', 400))
-    }
-
-    const resetToken = await user.generatePasswordResetToken();
-
-    await user.save();
-
-    const resetPasswordURL = `${process.env.CLIENT_URL}/user/profile/reset-password/${resetToken}`
-
-    const subject = 'Reset Password';
-    const message = `You can reset your password by clicking ${resetPasswordURL} Reset your password</$>\nIf the above link does not work for some reason then copy paste this link in new tab ${resetPasswordURL}.\n If you have not requested this, kindly ignore.`;
-
-    try {
-        await sendEmail(email, subject, message);
-
-        res.status(200).json({
-            success: true,
-            message: `Reset password token has been sent to ${email}`,
-        });
-    } catch (e) {
-        user.forgotPasswordExpiry = undefined;
-        user.forgotPasswordToken = undefined;
-        await user.save();
-        return next(new AppError(e.message, 500));
-    }
-
 }
 
 
@@ -263,7 +224,6 @@ export {
     login,
     logout,
     getProfile,
-    forgotPassword,
     resetPassword,
     changePassword,
     updateUser
