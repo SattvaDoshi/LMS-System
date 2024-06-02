@@ -3,37 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllCourses } from "../../Redux/Slices/CourseSlice";
 import CourseCard from "../../Components/CourseCard";
 import Layout from "../../Layout/Layout";
-import { gsap } from "gsap";
-
-const AnimatedCourseCard = React.forwardRef((props, ref) => {
-  const cardRef = useRef(null);
-
-  useEffect(() => {
-    const card = cardRef.current;
-
-    gsap.fromTo(
-      card,
-      {
-        opacity: 0,
-        y: 50,
-      },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.5,
-        ease: "power2.out",
-      }
-    );
-  }, []);
-
-  return <CourseCard ref={cardRef} {...props} />;
-});
+import gsap from 'gsap';
 
 export default function CourseList() {
   const dispatch = useDispatch();
   const { coursesData } = useSelector((state) => state.course);
-  const coursesContainerRef = useRef(null);
-  const headingRef = useRef(null);
+  const containerRef = useRef(null);
 
   async function fetchCourses() {
     await dispatch(getAllCourses());
@@ -42,44 +17,38 @@ export default function CourseList() {
   useEffect(() => {
     fetchCourses();
 
-    const coursesContainer = coursesContainerRef.current;
-    const heading = headingRef.current;
+    const containerElement = containerRef.current;
+    const coursesCards = containerElement.querySelectorAll('.course-card');
 
     gsap.fromTo(
-      heading,
-      {
-        opacity: 0,
-        y: -50,
-      },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        ease: "power2.out",
-      }
-    );
-
-    gsap.fromTo(
-      coursesContainer.children,
-      {
-        opacity: 0,
-        y: 50,
-        stagger: 0.2,
-      },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.5,
-        delay: 0.5,
-        ease: "power2.out",
-        stagger: 0.2,
-      }
+      coursesCards,
+      { opacity: 0, y: 50 },
+      { opacity: 0, y: 0, stagger: 0.2, duration: 0.8, ease: 'power2.out' }
     );
   }, []);
 
   return (
     <Layout>
-     
+      <div className="min-h-[90vh] pt-12 flex flex-col items-center gap-10 text-white">
+        <h1 className="text-center text-3xl font-semibold">
+          Explore the courses made by{" "}
+          <span className="font-bold text-yellow-500">Industry Experts</span>
+        </h1>
+        <div
+          ref={containerRef}
+          className="mb-10 flex flex-wrap justify-center gap-14 md:max-w-[920px] lg:max-w-[1200px]"
+        >
+          {coursesData?.map((element) => {
+            return (
+              <CourseCard
+                key={element._id}
+                data={element}
+                className="course-card w-full sm:w-auto"
+              />
+            );
+          })}
+        </div>
+      </div>
     </Layout>
   );
 }
