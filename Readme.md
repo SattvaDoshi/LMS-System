@@ -67,7 +67,7 @@ LMS-Project/
 ## Demo Video
 Click the image above to watch the demo video.
 
-[![Watch Demo Video](https://res.cloudinary.com/dhwbyshmo/image/upload/v1697537153/project%20images/lms-admin-dashboard.png)](https://www.linkedin.com/feed/update/urn:li:activity:7119641188646727681)
+[![Watch Demo Video](https://res.cloudinary.com/dhwbyshmo/image/upload/v1697537153/project%20images/lms-admin-dashboard.png)](https://www.linkedin.com/posts/sattva-doshi_mernstack-react-tailwindcss-activity-7193110981290442753-nQ9R?utm_source=share&utm_medium=member_desktop)
 
 
 ## Features
