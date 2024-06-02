@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan('dev'));
 app.use(cors({
-    origin: '*',
+    origin: 'https://lms-system-omega.vercel.app',
     credentials: true
 }));
 app.use(morgan('dev'))
